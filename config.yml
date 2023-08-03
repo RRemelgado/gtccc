@@ -1,0 +1,76 @@
+---
+ #----------------------------------------------------------------------------#
+ # configure the sampling approach
+ #----------------------------------------------------------------------------#
+ 
+ land_mask: land_mask.tif # image with mask of usable pixels
+ tiles: data/processing_tiles.shp # tiles used to split processing_tiles
+ 
+ # paths of relevance
+ gtccc_dir: 01_analysis/GTCCC # per-pixel predictions of tree-canopy cover
+ change_dir: 01_analysis/canopyChange # change classification
+ model_dir: 01_analysis/model/ # predictive model path
+ data_dir: 00_data # base data directory
+ sampling_dir: 01_analysis/sampling # folder to hold country-specific samples
+ quality_dir: 01_analysis/quality # directory where to store quality information
+ 
+ #----------------------------------------------------------------------------#
+ # data on geopolitical boundaries (used during sampling and validation)
+ #----------------------------------------------------------------------------#
+ 
+ boundaries:
+  country_polygon: country_borders.shp # country borders in vector format(used in sampling)
+  country_raster: country_borders.tif # country borders in raster format (used for validation)
+  region_raster: region_borders.tif # region borders in raster format (used for validation)
+ 
+ #----------------------------------------------------------------------------#
+ # define variable paths
+ #----------------------------------------------------------------------------#
+ 
+ variables: 
+  
+  canopy_cover: GFC/GFC-canopyDensity_*0000_300m.tif # tree cover %
+  forest_gains: GFC_change/GFC_change-percentGain_20000000-20200000_300m.tif # mask of pixels with tree cover gains
+  
+  predictors:
+   
+   land_cover: CCI_landCover/CCI_landCover-landCover_*0000_300m.tif # land cover data
+   
+   # coarse-scale Vegetation Continuous Fields (VCF) data, depicting broad vegetation patterns
+   vcf_treeCover: VCF/VCF-TreeCover_*0000_300m.tif
+   vcf_shortVegetation: VCF-NonTreeVegetation_*0000_300m.tif
+   vcf_notVegetated: VCF/VCF-NonVegetated_*0000_300m.tif
+   
+   # Coarse-scale VCF data depicting broad vegetation change patterns at different temporal scales
+   vcf_treeCover_change: VCF_change/VCF_change-TreeCover+years_*0000_300m.tif
+   vcf_shortVegetation_change: VCF_change/VCF_change-NonTreeVegetation+years_*0000_300m.tif
+   vcf_notVegetated_change: VCF_change/VCF_change-NonVegetated+years_*0000_300m.tif
+   vcf_cci_missmatch: VCF_CCI_mismatch/VCF_CCI_mismatch-percentDifference_*0000_10arcSec.tif
+   vcf_gfc_missmatch: VCF_GFC_mismatch/VCF_GFC_mismatch-percentDifference_*0000_10arcSec.tif
+   cci_gfc_missmatch: CCI_GFC_mismatch/CCI_GFC_mismatch-percentDifference_*0000_10arcSec.tif
+   
+   # fine resolution data on forest loss based on GFC data (measured from 2000 onwards)
+   gfc_lossYear_hr: gfc_change-lossYearHR_2000-2020_300m.tif # average first year of loss
+   gfc_coverLoss_hr: gfc_change-coverLossHR_2000-2020_300m.tif # overal % cover loss
+   
+   # coarse resolution data on forest loss based on GFC data (measured from 2000 onwards)
+   gfc_lossYear_lr: gfc_change-lossYearLR_2000-2020_300m.tif # average first year of loss
+   gfc_coverLoss_lr: gfc_change-coverLossLR_2000-2020_300m.tif # overal % cover loss
+   
+   # topographic variables
+   elevation: merit-elevation_NA_300m.tif # mean 
+   slope: merit-slope_NA_300m.tif
+   night_lights: dmsp-nightLights_*_300m.tif
+   aridity: chelsa-aridity_NA_300m.tif
+   precipitation: chelsa-precipitation_NA_300m.tif
+ 
+ #----------------------------------------------------------------------------#
+ # configure Random Forest model
+ #----------------------------------------------------------------------------#
+ 
+ forest_size:
+  min: 10 # minimum number of trees to test
+  max: 200 # maximum number of trees to test
+  step_size: 20 # interval between tests
+  samples: 10000 # nr of samples to test nr of trees
+  runs: 100 # number of training runs at each tree size
